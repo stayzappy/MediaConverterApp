@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'listviewscreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -102,6 +104,35 @@ class FileConverterScreen extends StatefulWidget {
 
 class _FileConverterScreenState extends State<FileConverterScreen> {
   int _selectedIndex = 0;
+  int _selectedFilesNum = 0;
+  List<PlatformFile> _selectedFiles = [];
+
+  void _navigateToFileList() {
+    setState(() {
+      _selectedFilesNum = 1;
+    });
+  }
+
+  Future<void> _pickFiles() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.media, // Allows audio and video files
+        allowMultiple: true,
+      );
+
+      if (result != null) {
+        setState(() {
+          _selectedFiles = result.files;
+        });
+        _navigateToFileList();
+      }
+    } catch (e) {
+      // Handle any errors during file picking
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error selecting files: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,84 +141,85 @@ class _FileConverterScreenState extends State<FileConverterScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // App Bar with icons
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('5:11', style: TextStyle(color: Colors.white)),
-                  Row(
-                    children: const [
-                      Icon(Icons.bluetooth, color: Color.fromRGBO(255, 255, 255, 0.7)),
-                      SizedBox(width: 8),
-                      Icon(Icons.volume_off, color: Color.fromRGBO(255, 255, 255, 0.7)),
-                      SizedBox(width: 8),
-                      Icon(Icons.location_on, color: Color.fromRGBO(255, 255, 255, 0.7)),
-                      SizedBox(width: 8),
-                      Text('80%', style: TextStyle(color: Colors.white)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            
-            // File Selection Area
             Expanded(
-              child: _selectedIndex == 0
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: DashedBorder(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Icon(
-                                Icons.add,
-                                size: 40,
+              ///////If Selected index is 0 or at start show Screen1/////////////
+              child: _selectedIndex == 0 ? 
+              //////If the user has not selected any files Show this
+              _selectedFilesNum == 0 ?
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: GestureDetector(
+                      onTap: _pickFiles,
+                      child: DashedBorder(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.add,
+                              size: 40,
+                              color: Color.fromRGBO(158, 158, 158, 0.7),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Select File(s)',
+                              style: const TextStyle(
                                 color: Color.fromRGBO(158, 158, 158, 0.7),
+                                fontSize: 16,
                               ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Select File(s)',
-                                style: TextStyle(
-                                  color: Color.fromRGBO(158, 158, 158, 0.7),
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    )
-                  : Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text(
-                            'Converted Files',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'Files you have converted will appear here.',
-                            style: TextStyle(
-                              color: Color.fromRGBO(158, 158, 158, 0.7),
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
-            ),
+                  ),
+                ),
+              )  
+                /////If the User has selected a file Show this////////////
+              : Expanded(
+                child: FileListView(
+                  files: _selectedFiles.map((file) => FileListItem(
+                    fileName: file.name,
+                    fileFormat: file.extension ?? '',
+                    filePath: file.path ?? '',
+                      // Replace with actual duration
+                  )).toList(),
+                ),
+              )
+              ////If the User Clicks the "Converted" Part of the bottomNavBar Show this//////////
+              : Expanded(
+                child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text(
+                              'Converted Files',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'Files you have converted will appear here.',
+                              style: TextStyle(
+                                color: Color.fromRGBO(158, 158, 158, 0.7),
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+              ),
+            )        
           ],
         ),
       ),
+
+      ////////Bottom Navigation Bar Area Of the App/////////
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.black,

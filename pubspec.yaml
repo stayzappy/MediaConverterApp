@@ -9,6 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  file_picker: ^8.1.7
+  nyx_converter: ^0.3.0
+  just_audio: ^0.9.46
+  video_player: ^2.9.2
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:
