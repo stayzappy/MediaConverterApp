@@ -10,15 +10,30 @@ dependencies:
   flutter:
     sdk: flutter
   file_picker: ^8.1.7
-  nyx_converter: ^0.3.0
   just_audio: ^0.9.46
   video_player: ^2.9.2
   path: ^1.9.0
+  permission_handler: ^11.3.1
+  shared_preferences: ^2.5.1
+  ffmpeg_kit_flutter_full_gpl: ^6.0.3
+  path_provider: ^2.1.5
+  share_plus: ^10.1.4
+  flutter_local_notifications: ^18.0.1
+  lottie: ^3.3.1
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/zappy.png"
+  adaptive_icon_background: "#FFFFFF" # Only for Android 8.0+ devices
+  #adaptive_icon_foreground: "assets/icon/icon_foreground.png"
 
 flutter:
   uses-material-design: true
